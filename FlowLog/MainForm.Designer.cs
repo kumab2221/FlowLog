@@ -28,32 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            menu = new MenuStrip();
             SuspendLayout();
-            // 
-            // menu
-            // 
-            menu.Location = new Point(0, 0);
-            menu.Name = "menu";
-            menu.Size = new Size(964, 24);
-            menu.TabIndex = 0;
-            menu.Text = "menuStrip1";
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(964, 601);
-            Controls.Add(menu);
-            MainMenuStrip = menu;
             Name = "MainForm";
             Text = "FlowLog";
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
-
-        private MenuStrip menu;
     }
 }
