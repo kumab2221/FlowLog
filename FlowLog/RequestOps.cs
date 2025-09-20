@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -9,7 +10,7 @@ namespace FlowLog
     {
         [JsonPropertyName("id")] public string Id { get; init; } = "";
         [JsonPropertyName("title")] public string Title { get; init; } = "";
-        [JsonPropertyName("requester")] public string Requester { get; init; } = "";
+        [JsonPropertyName("content")] public string Content { get; init; } = "";
         [JsonPropertyName("requester_email")] public string RequesterEmail { get; init; } = "";
         [JsonPropertyName("approver")] public string Approver { get; init; } = "";
         [JsonPropertyName("status")] public string Status { get; init; } = "PENDING";
@@ -26,24 +27,26 @@ namespace FlowLog
             return $"REQ-{ts}-{DateTime.Now:HHmmss}-{Random.Shared.Next(1000, 9999)}";
         }
 
-        public static void CreatePendingJson(string reqId, string title, string requester, string approverEmail, string requesterEmail)
+        public static void CreatePendingJson(string reqId, string title, string content, string requesterEmail, string approverEmail)
         {
+            var now = DateTimeOffset.Now.ToString("o");
             var obj = new RequestDto
             {
                 Id = reqId,
                 Title = title,
-                Requester = requester,
-                RequesterEmail = requesterEmail, // ★追加保存
+                Content = content,
+                RequesterEmail = requesterEmail,
                 Approver = approverEmail,
                 Status = "PENDING",
-                CreatedAt = DateTimeOffset.Now.ToString("o"),
-                UpdatedAt = DateTimeOffset.Now.ToString("o")
+                CreatedAt = now,
+                UpdatedAt = now
             };
+
             var json = JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
             var dir = Path.Combine(Paths.LocalRepo, "requests", "pending");
             Directory.CreateDirectory(dir);
             var path = Path.Combine(dir, $"{reqId}.json");
-            File.WriteAllText(path + ".tmp", json);
+            File.WriteAllText(path + ".tmp", json, new UTF8Encoding(false));
             File.Move(path + ".tmp", path, true);
         }
 
@@ -51,8 +54,8 @@ namespace FlowLog
         {
             var path = Path.Combine(Paths.LocalRepo, "requests", "pending", $"{reqId}.json");
             if (!File.Exists(path)) return null;
-            var raw = File.ReadAllText(path, new System.Text.UTF8Encoding(false));
-            return System.Text.Json.JsonSerializer.Deserialize<RequestDto>(raw);
+            var raw = File.ReadAllText(path, new UTF8Encoding(false));
+            return JsonSerializer.Deserialize<RequestDto>(raw);
         }
 
         public static void RemovePendingJson(string reqId)

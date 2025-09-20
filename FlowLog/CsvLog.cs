@@ -7,7 +7,31 @@ namespace FlowLog
 {
     public static class CsvLog
     {
-        public const string Header = "at,actor,action,req_id,title,requester,approver,note";
+        public const string Header = "at,actor,action,req_id,title,content,requester,approver,note"; // ★content追加
+
+        public static string Line(
+            string action,
+            string reqId,
+            string title,
+            string content,
+            string requesterEmail,
+            string actor,
+            string note,
+            string approver = "")
+        {
+            string esc(string s) => $"\"{(s ?? string.Empty).Replace("\"", "\"\"")}\"";
+            return string.Join(",",
+                DateTimeOffset.Now.ToString("o"),
+                esc(actor),
+                esc(action),
+                esc(reqId),
+                esc(title),
+                esc(content),
+                esc(requesterEmail),
+                esc(approver),
+                esc(note)
+            );
+        }
 
         public static string MonthlyCsvPath(DateTime now)
         {
@@ -39,23 +63,6 @@ namespace FlowLog
             File.Move(tmp, csvPath, true);
         }
 
-        public static string Line(
-            string action, string reqId, string title,
-            string requesterEmail, string actor, string note, string approver = "")
-        {
-            string esc(string s) => $"\"{(s ?? string.Empty).Replace("\"", "\"\"")}\"";
-            return string.Join(",",
-                DateTimeOffset.Now.ToString("o"),
-                esc(actor),
-                esc(action),
-                esc(reqId),
-                esc(title),
-                esc(requesterEmail),  // ★ requesterはEmail
-                esc(approver),
-                esc(note)
-            );
-        }
-
         public static void AppendWithRetry(string header, string line, string actor, string email, int maxRetry = 3)
         {
             using var repo = new Repository(Paths.LocalRepo);
@@ -78,5 +85,7 @@ namespace FlowLog
             }
             throw new Exception("push retry exceeded");
         }
+
+        
     }
 }
