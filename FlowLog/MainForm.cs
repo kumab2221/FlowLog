@@ -279,6 +279,7 @@ namespace FlowLog
             tab.Controls.Add(p);
 
             LoadPendingIntoList(lv, onlyMyApprovals: true);
+            btnRefresh.PerformClick();
             return tab;
         }
 
@@ -335,6 +336,7 @@ namespace FlowLog
             tab.Controls.Add(p);
 
             LoadMyPending(lv);
+            btnRefresh.PerformClick();
             return tab;
         }
 
