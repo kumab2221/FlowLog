@@ -16,13 +16,19 @@ namespace FlowLog
 
         public AppConfig? ResultConfig { get; private set; }
 
-        public ConfigSettingForm()
+        public ConfigSettingForm(AppConfig? cfg = null)
         {
             InitializeComponent();
+            this.ResultConfig = cfg;
         }
 
         private void ConfigSettingForm_Load(object sender, EventArgs e)
         {
+            if(ResultConfig is not null)
+            {
+                tbActor.Text = ResultConfig.Actor;
+                tbEmail.Text = ResultConfig.Email;
+            }
             this.ActiveControl = btnOK;
         }
 
