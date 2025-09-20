@@ -14,15 +14,33 @@ namespace FlowLog
             var grid = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, AutoSize = true };
             grid.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
             grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            void Row(string k, string v) { grid.Controls.Add(new Label { Text = k, AutoSize = true }); grid.Controls.Add(new TextBox { Text = v, ReadOnly = true, Dock = DockStyle.Fill }); }
+
+            void Row(string k, string v, bool multiline = false)
+            {
+                grid.Controls.Add(new Label { Text = k, AutoSize = true });
+
+                var tb = new TextBox
+                {
+                    Text = v,
+                    ReadOnly = true,
+                    Dock = DockStyle.Fill,
+                    Multiline = multiline,
+                    ScrollBars = multiline ? ScrollBars.Both : ScrollBars.None,
+                    WordWrap = true
+                };
+
+                if (multiline) tb.Height = 80;
+                grid.Controls.Add(tb);
+            }
 
             Row("REQ-ID", req.Id);
-            Row("タイトル", req.Title);
-            Row("申請者", req.Requester);
-            Row("承認者", req.Approver);
-            Row("状態", req.Status);
             Row("作成", req.CreatedAt ?? "");
             Row("更新", req.UpdatedAt ?? "");
+            Row("状態", req.Status);
+            Row("申請者", req.RequesterEmail);
+            Row("承認者", req.Approver);
+            Row("タイトル", req.Title);
+            Row("内容", req.Content, multiline: true);
             Row("メモ", req.Comment ?? "");
 
             var tbJson = new TextBox { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, Dock = DockStyle.Fill, Font = new System.Drawing.Font("Consolas", 9) };
@@ -35,6 +53,11 @@ namespace FlowLog
             tabs.TabPages.Add(t1); tabs.TabPages.Add(t2);
 
             Controls.Add(tabs);
+        }
+
+        private void InitializeComponent()
+        {
+
         }
     }
 }
